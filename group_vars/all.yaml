@@ -1,0 +1,10 @@
+# all.yaml
+# Global variables for oscar emr installation
+#===================================================================
+# Copyright Jake Swart 2017 released under the MIT License
+#===================================================================
+---
+  ROOT_PASSWORD: root
+  OSCAR_PACKAGE: oscar_emr15-70~690.deb
+  HOME:         "{{ lookup('env', 'HOME') }}"
+  DOWN:         "{{HOME}}/Downloads"

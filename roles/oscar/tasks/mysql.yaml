@@ -1,0 +1,41 @@
+# mysql.yaml
+# mysql package and configuration needed by oscar emr
+#===================================================================
+# Copyright Jake Swart 2017 released under the MIT License
+#===================================================================
+---
+  - name: Install mariadb-server
+    apt: update_cache=no name=mariadb-server install_recommends=yes
+
+  - name: Install mariadb-client
+    apt: update_cache=no name=mariadb-client install_recommends=yes
+
+  - name: Install libmysql-java
+    apt: update_cache=no name=libmysql-java install_recommends=yes
+
+  - name: Install libmysqlclient-dev for MySQL-python
+    apt: name=libmysqlclient-dev install_recommends=yes
+
+  - name: pip install mysqlclient
+    pip: name=mysqlclient
+
+  - shell: mysql -uroot -proot -e"quit" 2>/dev/null || echo false
+    register: mysqlAlreadySetup
+    changed_when: False
+
+  - block:
+    - name: Set root user password={{ROOT_PASSWORD}}
+      mysql_user: name=root password={{ROOT_PASSWORD}} encrypted=no state=present
+    
+    - name: Delete anonymous users
+      mysql_user: name=root login_user=root login_password={{ROOT_PASSWORD}} encrypted=no state=present
+
+    - name: Remove anonymous user account for localhost
+      mysql_user: name='' login_user=root login_password={{ROOT_PASSWORD}} host=localhost state=absent
+
+    - name: Remove all anonymous user accounts
+      mysql_user: name='' login_user=root login_password={{ROOT_PASSWORD}} host_all=yes state=absent
+
+    - name: Delete the test database
+      mysql_db: name=test state=absent login_user=root login_password={{ROOT_PASSWORD}}
+    when: mysqlAlreadySetup.stdout == "false"

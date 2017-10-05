@@ -1,0 +1,26 @@
+# jdk.yaml
+# jdk8 setup reused for oscar emr
+#===================================================================
+# Copyright Jake Swart 2017 released under the MIT License
+#===================================================================
+---
+  - name: Install openjdk-r ppa
+    command: add-apt-repository ppa:openjdk-r/ppa -y
+    register: openjdk
+    when: false
+
+  - name: Update apt-get cache
+    apt: update_cache=yes install_recommends=yes
+    changed_when: false
+
+  - name: Install openjdk-8-jdk
+    apt: name=openjdk-8-jdk install_recommends=yes
+
+  - name: Get path of Java 1.8
+    shell: "update-java-alternatives -l | grep '1.8' | awk '{print $3}'"
+    register: javaPath
+    changed_when: false
+
+  - name: Set JDK 8 as Default
+    command: update-java-alternatives -s {{javaPath.stdout}}
+    changed_when: false

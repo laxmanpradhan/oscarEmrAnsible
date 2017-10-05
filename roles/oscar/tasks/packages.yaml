@@ -1,0 +1,27 @@
+# packages.yaml
+# Basic packages needed by oscar emr
+#===================================================================
+# Copyright Jake Swart 2017 released under the MIT License
+#===================================================================
+---
+  - name: Update Apt Cache
+    apt: update_cache=yes
+    changed_when: False
+
+  - name: Install unzip
+    apt: update_cache=no name=unzip install_recommends=yes
+
+  - name: Install wkhtmltopdf
+    apt: update_cache=no name=wkhtmltopdf install_recommends=yes
+
+  - name: Install tomcat7
+    apt: update_cache=no name=tomcat7 install_recommends=yes    
+
+  - name: Install libtomcat7-java
+    apt: update_cache=no name=libtomcat7-java install_recommends=yes
+
+  - name: Install pgpgpg
+    apt: update_cache=no name=pgpgpg install_recommends=yes
+
+  - name: Install curl
+    apt: update_cache=no name=curl install_recommends=yes

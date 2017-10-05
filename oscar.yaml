@@ -1,0 +1,41 @@
+# oscar.yaml
+# Main run script that install all base software needed before 
+# install the oscar.deb package.
+#===================================================================
+# Copyright Jake Swart 2017 released under the MIT License
+#===================================================================
+---
+
+# To run: ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local
+- hosts: localhost
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_connection: local
+  become: true
+  become_user: root
+
+  roles:
+    - oscar
+
+  tasks:
+
+  #-----------------------------------------------------------------------
+  # Oscar 15 Download, Install, Configure
+  #-----------------------------------------------------------------------
+  - name: Allow OSCAR to be able to login without using the plugin to pass linux root credentials
+    command: mysql -uroot -proot -e "use mysql; update user set plugin='' where User='root'; flush privileges;"
+    changed_when: false
+
+  - name: Prevent Redownload
+    stat: path={{DOWN}}/{{OSCAR_PACKAGE}}
+    register: stDownOscar
+
+  - name: Download Oscar
+    get_url: 
+      dest: "{{DOWN}}/{{OSCAR_PACKAGE}}" 
+      url: "http://sourceforge.net/projects/oscarmcmaster/files/Oscar%20Debian%2BUbuntu%20deb%20Package/{{OSCAR_PACKAGE}}"
+      validate_certs: no
+    when: stDownOscar.stat.exists is defined and not stDownOscar.stat.exists
+
+  - name: Install {{DOWN}}/{{OSCAR_PACKAGE}}
+    debug: msg="\n PRE-INSTALLATION COMPLETE. You must run 'sudo dpkg -i /home/oscar16/Downloads/oscar_emr15-70~690.deb' to install oscar!"

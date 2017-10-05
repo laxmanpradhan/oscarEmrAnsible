@@ -1,0 +1,9 @@
+# main.yaml
+# Role tasks for oscar emr setup
+#===================================================================
+# Copyright Jake Swart 2017 released under the MIT License
+#===================================================================
+---
+- import_tasks: packages.yaml
+- import_tasks: jdk.yaml
+- import_tasks: mysql.yaml
