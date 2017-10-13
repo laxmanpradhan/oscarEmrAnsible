@@ -25,3 +25,6 @@
 
   - name: Install curl
     apt: update_cache=no name=curl install_recommends=yes
+
+  - name: Install debconf-utils
+    apt: update_cache=no name=debconf-utils install_recommends=yes
