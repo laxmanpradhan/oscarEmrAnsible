@@ -38,4 +38,4 @@
     when: stDownOscar.stat.exists is defined and not stDownOscar.stat.exists
 
   - name: Install {{DOWN}}/{{OSCAR_PACKAGE}}
-    debug: msg="\n PRE-INSTALLATION COMPLETE. You must run 'sudo dpkg -i {{HOME}}/Downloads/oscar_emr15-70~690.deb' to install oscar!"
+    debug: msg="\n PRE-INSTALLATION COMPLETE. You must run 'sudo dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}' to install oscar!"
