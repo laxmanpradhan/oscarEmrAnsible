@@ -28,14 +28,29 @@
 
   - name: Prevent Redownload
     stat: path={{DOWN}}/{{OSCAR_PACKAGE}}
-    register: stDownOscar
+    register: stOscarDebFile
 
   - name: Download Oscar
     get_url: 
       dest: "{{DOWN}}/{{OSCAR_PACKAGE}}" 
       url: "http://sourceforge.net/projects/oscarmcmaster/files/Oscar%20Debian%2BUbuntu%20deb%20Package/{{OSCAR_PACKAGE}}"
       validate_certs: no
-    when: stDownOscar.stat.exists is defined and not stDownOscar.stat.exists
+    when: stOscarDebFile.stat.exists is defined and not stOscarDebFile.stat.exists
+
+  - name: Prevent ReInstall
+    stat: path={{OSCAR_PROPERTIES}}
+    register: stOscarPropertiesFile
+
+  - block:
+
+    - shell: echo "oscar-emr oscar-emr/password password root" | debconf-set-selections
+    - shell: echo "oscar-emr oscar-emr/demo boolean false" | debconf-set-selections
+    - shell: DEBIAN_FRONTEND=noninteractive dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}
+    - shell: echo "RESET oscar-emr/password" | debconf-communicate oscar-emr
+    - shell: echo "RESET oscar-emr/demo" | debconf-communicate oscar-emr
+
+    when: stOscarPropertiesFile.stat.exists is defined and not stOscarPropertiesFile.stat.exists and OSCAR_DEB_VERSION|int >= 690
 
   - name: Install {{DOWN}}/{{OSCAR_PACKAGE}}
     debug: msg="\n PRE-INSTALLATION COMPLETE. You must run 'sudo dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}' to install oscar!"
+    when: OSCAR_DEB_VERSION|int < 690

@@ -2,7 +2,7 @@
 Ansible Scripts for Deploying Oscar EMR
 
 ## Introduction
-This script is meant to help developers deploy oscar on top of their Ubuntu 16 LTS VM. It is not necessarily meant to help with production installations.  However, if you are using this script for production, then you should set the ROOT_PASSWORD field in oscarEmrAnsible/group_vars/all.yaml to something proper.
+This script is meant to help developers deploy oscar on top of their Ubuntu 16 LTS VM. It is not necessarily meant to help with production installations.  However, if you are using this script for production, then you should set the ROOT_PASSWORD field in oscarEmrAnsible/group_vars/all.yaml to something proper, or pass it to ansible-playbook on the command line with `--extra-vars "ROOT_PASSWORD=<your own password>"`.
 
 ## Usage
 ### Step 1: Install git
@@ -13,10 +13,14 @@ sudo apt-get install git
 source ~/.bashrc
 
 ### Step 3: Run the ansible playbook
-ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local-pass
+`ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local-pass`
+-or-
+`ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local-pass --extra-vars "ROOT_PASSWORD=<your own password>"`
 
-### Step 4: Install Oscar
-sudo dpkg -i /home/oscar16/Downloads/oscar_emr15-70~690.deb
+### Step 4: Follow extra instructions
+The ansible scripts may print out instructions to complete the ansible installation; you should pay attention and follow them.
+
+A lot of older versions of the the debian package release do not allow a completely automated installation, so you will need to do some extra steps.
 
 ## Contact
-Jake@cliniconex.com
+jake.swart8@gmail.com
