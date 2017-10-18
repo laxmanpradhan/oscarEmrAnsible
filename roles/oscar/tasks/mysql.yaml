@@ -24,7 +24,7 @@
     changed_when: False
 
   - block:
-    - name: Set {{MYSQL_USER}} user password={{MYSQL_PASSWORD}}
+    - name: Set {{MYSQL_USER}} user password
       mysql_user: name={{MYSQL_USER}} password={{MYSQL_PASSWORD}} encrypted=no state=present
     
     - name: Delete anonymous users

@@ -43,11 +43,20 @@
 
   - block:
 
-    - shell: echo "oscar-emr oscar-emr/password password {{MYSQL_PASSWORD}}" | debconf-set-selections
-    - shell: echo "oscar-emr oscar-emr/demo boolean false" | debconf-set-selections
-    - shell: DEBIAN_FRONTEND=noninteractive dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}
-    - shell: echo "RESET oscar-emr/password" | debconf-communicate oscar-emr
-    - shell: echo "RESET oscar-emr/demo" | debconf-communicate oscar-emr
+    - name: Temporarily Store oscar-emr/password in debconf database
+      shell: echo "oscar-emr oscar-emr/password password {{MYSQL_PASSWORD}}" | debconf-set-selections
+
+    - name: Temporarily Store oscar-emr/demo=false in debconf database
+      shell: echo "oscar-emr oscar-emr/demo boolean false" | debconf-set-selections
+
+    - name: Install Oscar Debian Package
+      shell: DEBIAN_FRONTEND=noninteractive dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}
+
+    - name: Cleanup oscar-emr/password in debconf database
+      shell: echo "RESET oscar-emr/password" | debconf-communicate oscar-emr
+
+    - name: Cleanup oscar-emr/demo in debconf database
+      shell: echo "RESET oscar-emr/demo" | debconf-communicate oscar-emr
 
     when: stOscarPropertiesFile.stat.exists is defined and not stOscarPropertiesFile.stat.exists and OSCAR_DEB_VERSION|int >= 690
 
