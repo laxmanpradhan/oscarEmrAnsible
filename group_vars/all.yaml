@@ -4,7 +4,8 @@
 # Copyright Jake Swart 2017 released under the MIT License
 #===================================================================
 ---
-  ROOT_PASSWORD:     root
+  MYSQL_USER:        root
+  MYSQL_PASSWORD:    root
   OSCAR_VERSION:     15
   OSCAR_SUB_VERSION: 70
   OSCAR_DEB_VERSION: 690

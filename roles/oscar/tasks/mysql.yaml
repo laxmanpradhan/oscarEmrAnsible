@@ -19,23 +19,23 @@
   - name: pip install mysqlclient
     pip: name=mysqlclient
 
-  - shell: mysql -uroot -proot -e"quit" 2>/dev/null || echo false
+  - shell: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e"quit" 2>/dev/null || echo false
     register: mysqlAlreadySetup
     changed_when: False
 
   - block:
-    - name: Set root user password={{ROOT_PASSWORD}}
-      mysql_user: name=root password={{ROOT_PASSWORD}} encrypted=no state=present
+    - name: Set {{MYSQL_USER}} user password={{MYSQL_PASSWORD}}
+      mysql_user: name={{MYSQL_USER}} password={{MYSQL_PASSWORD}} encrypted=no state=present
     
     - name: Delete anonymous users
-      mysql_user: name=root login_user=root login_password={{ROOT_PASSWORD}} encrypted=no state=present
+      mysql_user: name={{MYSQL_USER}} login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}} encrypted=no state=present
 
     - name: Remove anonymous user account for localhost
-      mysql_user: name='' login_user=root login_password={{ROOT_PASSWORD}} host=localhost state=absent
+      mysql_user: name='' login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}} host=localhost state=absent
 
     - name: Remove all anonymous user accounts
-      mysql_user: name='' login_user=root login_password={{ROOT_PASSWORD}} host_all=yes state=absent
+      mysql_user: name='' login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}} host_all=yes state=absent
 
     - name: Delete the test database
-      mysql_db: name=test state=absent login_user=root login_password={{ROOT_PASSWORD}}
+      mysql_db: name=test state=absent login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}}
     when: mysqlAlreadySetup.stdout == "false"

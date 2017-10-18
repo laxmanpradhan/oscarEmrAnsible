@@ -22,8 +22,8 @@
   #-----------------------------------------------------------------------
   # Oscar 15 Download, Install, Configure
   #-----------------------------------------------------------------------
-  - name: Allow OSCAR to be able to login without using the plugin to pass linux root credentials
-    command: mysql -uroot -proot -e "use mysql; update user set plugin='' where User='root'; flush privileges;"
+  - name: Allow OSCAR to be able to login without using the plugin to pass linux {{MYSQL_USER}} credentials
+    command: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e "use mysql; update user set plugin='' where User='{{MYSQL_PASSWORD}}'; flush privileges;"
     changed_when: false
 
   - name: Prevent Redownload
@@ -43,7 +43,7 @@
 
   - block:
 
-    - shell: echo "oscar-emr oscar-emr/password password root" | debconf-set-selections
+    - shell: echo "oscar-emr oscar-emr/password password {{MYSQL_PASSWORD}}" | debconf-set-selections
     - shell: echo "oscar-emr oscar-emr/demo boolean false" | debconf-set-selections
     - shell: DEBIAN_FRONTEND=noninteractive dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}
     - shell: echo "RESET oscar-emr/password" | debconf-communicate oscar-emr
