@@ -6,15 +6,18 @@ This script is meant to help developers deploy oscar on top of their Ubuntu 16 L
 
 ## Usage
 ### Step 1: Install git
-sudo apt-get install git
+`sudo apt-get install git`
 
 ### Step 2: Install ansible
-./setupAnsible.sh
-source ~/.bashrc
+`./setupAnsible.sh`
+
+`source ~/.bashrc`
 
 ### Step 3: Run the ansible playbook
 `ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local-pass`
+
 -or-
+
 `ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local-pass --extra-vars "MYSQL_PASSWORD=<your own password>"`
 
 ### Step 4: Follow extra instructions
