@@ -1,0 +1,49 @@
+---
+  #-----------------------------------------------------------------------
+  # Setup the Bare Minimum to Run Ansible on a Target Machine
+  #-----------------------------------------------------------------------
+  - block:
+    - name: Install python-simplejson
+      raw: apt-get -y install python-simplejson
+      changed_when: false
+    
+    - name: Install python-dev
+      raw: apt-get -y install python-dev
+      changed_when: false
+    
+    - name: Install python-setuptools
+      raw: apt-get -y install python-setuptools
+      changed_when: false
+
+    - name: Install pip
+      raw: easy_install pip
+      changed_when: false
+    
+    - name: Install python-apt
+      raw: apt-get -y install python-apt
+      changed_when: false
+
+    when: ansible_distribution == "Ubuntu" and ansible_distribution_version == "14.04"
+    become: True
+  
+  - block:
+    - name: Install python3-pip
+      apt: pkg=python3-pip state=installed install_recommends=yes update_cache=yes
+    when: ansible_python_interpreter == "/usr/bin/python3"
+
+  #-----------------------------------------------------------------------
+  # Install Ansible Required Software
+  #-----------------------------------------------------------------------
+
+  - name: Update apt-get Cache
+    apt: update_cache=yes install_recommends=yes
+    changed_when: false
+
+  - name: Install passlib
+    pip: name=passlib
+
+  - name: Install libssl-dev
+    apt: update_cache=no name=libssl-dev install_recommends=yes
+
+  - name: Install cryptography
+    pip: name=cryptography
