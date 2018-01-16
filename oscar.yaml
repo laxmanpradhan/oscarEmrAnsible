@@ -53,11 +53,11 @@
       shell: DEBIAN_FRONTEND=noninteractive dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}
 
     - name: Cleanup oscar-emr/password in debconf database
-      shell: echo "RESET oscar-emr/password" | debconf-communicate oscar-emr
+      shell: echo "RESET oscar-emr/password" | debconf-communicate oscar-emr &>/dev/null
       ignore_errors: yes
 
     - name: Cleanup oscar-emr/demo in debconf database
-      shell: echo "RESET oscar-emr/demo" | debconf-communicate oscar-emr
+      shell: echo "RESET oscar-emr/demo" | debconf-communicate oscar-emr &>/dev/null
       ignore_errors: yes
 
     when: stOscarPropertiesFile.stat.exists is defined and not stOscarPropertiesFile.stat.exists and OSCAR_DEB_VERSION|int >= 694
