@@ -7,7 +7,6 @@
   - name: Install openjdk-r ppa
     command: add-apt-repository ppa:openjdk-r/ppa -y
     register: openjdk
-    when: false
 
   - name: Update apt-get cache
     apt: update_cache=yes install_recommends=yes

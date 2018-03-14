@@ -26,6 +26,9 @@
     command: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e "use mysql; update user set plugin='' where User='{{MYSQL_PASSWORD}}'; flush privileges;"
     changed_when: false
 
+  - name: Ensure directory exists {{DOWN}}
+    file: path={{DOWN}} state=directory
+
   - name: Prevent Redownload
     stat: path={{DOWN}}/{{OSCAR_PACKAGE}}
     register: stOscarDebFile

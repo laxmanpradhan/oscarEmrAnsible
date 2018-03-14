@@ -23,13 +23,13 @@
       raw: apt-get -y install python-apt
       changed_when: false
 
-    when: ansible_distribution == "Ubuntu" and ansible_distribution_version == "14.04"
-    become: True
-  
+    when: ansible_python_version | version_compare('3.0', '<')
+    become: true
+
   - block:
     - name: Install python3-pip
       apt: pkg=python3-pip state=installed install_recommends=yes update_cache=yes
-    when: ansible_python_interpreter == "/usr/bin/python3"
+    when: ansible_python_version | version_compare('3.0', '>=')
 
   #-----------------------------------------------------------------------
   # Install Ansible Required Software
@@ -39,6 +39,15 @@
     apt: update_cache=yes install_recommends=yes
     changed_when: false
 
+  - name: Install setuptools
+    pip: name=setuptools
+
+  - name: Install passlib
+    pip: name=setuptools state=latest
+
+  - name: Install wheel
+    pip: name=wheel state=latest
+
   - name: Install passlib
     pip: name=passlib
 
@@ -47,3 +56,5 @@
 
   - name: Install cryptography
     pip: name=cryptography
+
+
