@@ -8,7 +8,7 @@
   MYSQL_PASSWORD:    root
   OSCAR_VERSION:     15
   OSCAR_SUB_VERSION: 80
-  OSCAR_DEB_VERSION: 757 
+  OSCAR_DEB_VERSION: 745 
   OSCAR_PACKAGE:     oscar_emr{{OSCAR_VERSION}}-{{OSCAR_SUB_VERSION}}~{{OSCAR_DEB_VERSION}}.deb
   OSCAR_PROPERTIES:  /usr/share/tomcat7/oscar.properties
   HOME:              "{{ lookup('env', 'HOME') }}"
