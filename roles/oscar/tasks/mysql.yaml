@@ -4,38 +4,72 @@
 # Copyright Jake Swart 2017 released under the MIT License
 #===================================================================
 ---
-  - name: Install mariadb-server
-    apt: update_cache=no name=mariadb-server install_recommends=yes
+ # - name: Install mariadb-server
+  #  apt: update_cache=no name=mariadb-server install_recommends=yes
 
-  - name: Install mariadb-client
-    apt: update_cache=no name=mariadb-client install_recommends=yes
+ # - name: Install mariadb-client
+ #   apt: update_cache=no name=mariadb-client install_recommends=yes
 
-  - name: Install libmysql-java
-    apt: update_cache=no name=libmysql-java install_recommends=yes
+ # - name: Install libmysql-java
+ #   apt: update_cache=no name=libmysql-java install_recommends=yes
 
-  - name: Install libmysqlclient-dev for MySQL-python
-    apt: name=libmysqlclient-dev install_recommends=yes
+ # - name: Install libmysqlclient-dev for MySQL-python
+ #   apt: name=libmysqlclient-dev install_recommends=yes
+  
+  # new
+ # - name: Install PIP
+  #  apt: name=python-pip install_recommends=yes
+
+
+    
+    # new
+ # - name: install MYSQL python tools
+ #   pip: name=MySQL-python
+
+
+## This part is not really indemible, it works but not great
+# maybe set mysql password to blank and then set it back to what is set here??
+
+
+
+  - name: Install the MySQL packages
+    apt: name={{ item }} state=present update_cache=yes
+    with_items:
+      - mariadb-server
+      - mariadb-client
+      - python-mysqldb
+      - libmysqlclient-dev
+      - libmysql-java
 
   - name: pip install mysqlclient
     pip: name=mysqlclient
-
+    
+    
   - shell: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e"quit" 2>/dev/null || echo false
     register: mysqlAlreadySetup
-    changed_when: False
-
-  - block:
-    - name: Set {{MYSQL_USER}} user password
-      mysql_user: name={{MYSQL_USER}} password={{MYSQL_PASSWORD}} encrypted=no state=present
+    changed_when: False    
+     
+  - block:     
+     - name: Update MySQL root password for all root accounts only if password isn't setup
+       mysql_user: name=root host={{ item }} password={{MYSQL_PASSWORD}} state=present
+       with_items:
+         - "{{ ansible_hostname }}"
+         - 127.0.0.1
+         - ::1
+         - localhost
     
-    - name: Delete anonymous users
-      mysql_user: name={{MYSQL_USER}} login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}} encrypted=no state=present
-
-    - name: Remove anonymous user account for localhost
-      mysql_user: name='' login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}} host=localhost state=absent
-
-    - name: Remove all anonymous user accounts
-      mysql_user: name='' login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}} host_all=yes state=absent
-
-    - name: Delete the test database
-      mysql_db: name=test state=absent login_user={{MYSQL_USER}} login_password={{MYSQL_PASSWORD}}
+    # - name: Copy the root credentials as .my.cnf file
+     #  template: src=root.cnf.j2 dest=~/.my.cnf mode=0600
+    
+     - name: Ensure Anonymous user(s) are not in the database
+       mysql_user: name='' host={{ item }} state=absent
+       with_items:
+         - localhost
+         - "{{ ansible_hostname }}"
+    
+     - name: Remove the test database
+       mysql_db: name=test state=absent
+       notify:
+         - Restart MySQL
+         
     when: mysqlAlreadySetup.stdout == "false"

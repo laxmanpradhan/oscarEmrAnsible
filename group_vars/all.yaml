@@ -5,7 +5,7 @@
 #===================================================================
 ---
   MYSQL_USER:        root
-  MYSQL_PASSWORD:    root
+  MYSQL_PASSWORD:    pass123
   OSCAR_VERSION:     15
   OSCAR_SUB_VERSION: 80
   OSCAR_DEB_VERSION: 745 

@@ -7,10 +7,9 @@
 ---
 
 # To run: ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local
-- hosts: localhost
+- hosts: web
   vars:
     ansible_python_interpreter: /usr/bin/python3
-    ansible_connection: local
   become: true
   become_user: root
 
@@ -22,8 +21,10 @@
   #-----------------------------------------------------------------------
   # Oscar 15 Download, Install, Configure
   #-----------------------------------------------------------------------
+  
+  ## username is wrong here, set to pass??? consider change
   - name: Allow OSCAR to be able to login without using the plugin to pass linux {{MYSQL_USER}} credentials
-    command: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e "use mysql; update user set plugin='' where User='{{MYSQL_PASSWORD}}'; flush privileges;"
+    command: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e "use mysql; update user set plugin='' where User='{{MYSQL_USER}}'; flush privileges;"
     changed_when: false
 
   - name: Ensure directory exists {{DOWN}}

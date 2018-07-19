@@ -3,58 +3,106 @@
   # Setup the Bare Minimum to Run Ansible on a Target Machine
   #-----------------------------------------------------------------------
   - block:
-    - name: Install python-simplejson
-      raw: apt-get -y install python-simplejson
-      changed_when: false
-    
-    - name: Install python-dev
-      raw: apt-get -y install python-dev
-      changed_when: false
-    
-    - name: Install python-setuptools
-      raw: apt-get -y install python-setuptools
-      changed_when: false
+  
+    - name: Install ansible helpers - python and pip if < 3.0
+      apt:
+        name: "{{ item }}"
+        state: present
+        install_recommends: yes
+        update_cache: no
+      with_items:
+        - python-simplejson
+        - python-dev
+        - python-setuptools
+        - python-apt
 
-    - name: Install pip
-      raw: easy_install pip
-      changed_when: false
+#    - name: Install python-simplejson
+#      raw: apt-get -y install python-simplejson
+#      changed_when: false
     
-    - name: Install python-apt
-      raw: apt-get -y install python-apt
-      changed_when: false
+#    - name: Install python-dev
+#      raw: apt-get -y install python-dev
+#      changed_when: false
+    
+#    - name: Install python-setuptools
+#      raw: apt-get -y install python-setuptools
+#      changed_when: false
 
-    when: ansible_python_version | version_compare('3.0', '<')
+    - name: install pip if < 3.0
+      easy_install:
+        name: pip
+        state: present
+
+## may need to bring this back:
+#    - name: Install pip
+#      raw: easy_install pip
+#      changed_when: false
+
+
+
+    
+#    - name: Install python-apt
+#      raw: apt-get -y install python-apt
+#      changed_when: false
+
+    when: ansible_python_version is version_compare('3.0', '<')
     become: true
 
   - block:
-    - name: Install python3-pip
-      apt: pkg=python3-pip state=installed install_recommends=yes update_cache=yes
-    when: ansible_python_version | version_compare('3.0', '>=')
+    - name: Install python3-pip because > 3.0
+      apt: pkg=python3-pip state=present install_recommends=yes update_cache=yes
+    when: ansible_python_version is version_compare('3.0', '>=')
 
   #-----------------------------------------------------------------------
   # Install Ansible Required Software
   #-----------------------------------------------------------------------
 
-  - name: Update apt-get Cache
-    apt: update_cache=yes install_recommends=yes
-    changed_when: false
+  - name: Apt Install ansible required pkgs - libssl-dev
+    apt:
+      name: "{{ item }}"
+      state: present
+      install_recommends: yes
+      update_cache: no
+    with_items:
+      - libssl-dev
+      
 
-  - name: Install setuptools
-    pip: name=setuptools
+  - name: PIP Install ansible required pkgs - setuptools, libssl-dev, wheel, cryptography
+    pip:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - setuptools
+      - passlib
+      - wheel
+      - cryptography
 
-  - name: Install passlib
-    pip: name=setuptools state=latest
 
-  - name: Install wheel
-    pip: name=wheel state=latest
+#  - name: Update apt-get Cache
+#    apt: update_cache=yes install_recommends=yes
+#    changed_when: false
 
-  - name: Install passlib
-    pip: name=passlib
+#  - name: Install setuptools
+#    pip: name=setuptools
 
-  - name: Install libssl-dev
-    apt: update_cache=no name=libssl-dev install_recommends=yes
+##the name is incorrect, this is not being installed but it still works
+# maybe not needed??
+#  - name: Install passlib
+#    pip: name=setuptools state=latest
 
-  - name: Install cryptography
-    pip: name=cryptography
+#  - name: Install wheel
+#    pip: name=wheel state=latest
+
+
+##duplicate from above??
+#  - name: Install passlib
+#    pip: name=passlib
+
+
+#  - name: Install libssl-dev
+#    apt: update_cache=no name=libssl-dev install_recommends=yes
+
+#  - name: Install cryptography
+#    pip: name=cryptography
 
 
