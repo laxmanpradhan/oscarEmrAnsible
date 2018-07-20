@@ -67,7 +67,7 @@
       - libssl-dev
       
 
-  - name: PIP Install ansible required pkgs - setuptools, libssl-dev, wheel, cryptography
+  - name: PIP Install ansible required pkgs - setuptools, passlib, wheel, cryptography
     pip:
       name: "{{ item }}"
       state: present

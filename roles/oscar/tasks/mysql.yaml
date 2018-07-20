@@ -29,7 +29,7 @@
 
 ## This part is not really indemible, it works but not great
 # maybe set mysql password to blank and then set it back to what is set here??
-
+##TODO: pip is out of date, should do an apt upgrade at the start maybe??
 
 
   - name: Install the MySQL packages
@@ -44,14 +44,26 @@
   - name: pip install mysqlclient
     pip: name=mysqlclient
     
+ # - meta: end_play   
     
-  - shell: mysql -u{{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e"quit" 2>/dev/null || echo false
-    register: mysqlAlreadySetup
-    changed_when: False    
-     
+    #2>/dev/null redirects the stderr to /dev/null
+#  - shell: mysql -u {{MYSQL_USER}} -p{{MYSQL_PASSWORD}} -e"quit" 2>/dev/null || echo false
+#    register: mysqlAlreadySetup
+#    changed_when: False 
+    
+#  - name: Debug shell variable
+#    debug:
+#      msg: "{{mysqlAlreadySetup}}"
+       
+   
   - block:     
      - name: Update MySQL root password for all root accounts only if password isn't setup
-       mysql_user: name=root host={{ item }} password={{MYSQL_PASSWORD}} state=present
+       mysql_user:
+        name: "{{MYSQL_USER}}"
+        password: "{{MYSQL_PASSWORD}}"
+        host: "{{ item }}"
+        state: present
+        encrypted: no
        with_items:
          - "{{ ansible_hostname }}"
          - 127.0.0.1
@@ -62,14 +74,23 @@
      #  template: src=root.cnf.j2 dest=~/.my.cnf mode=0600
     
      - name: Ensure Anonymous user(s) are not in the database
-       mysql_user: name='' host={{ item }} state=absent
+       mysql_user:
+        name: ''
+        host: "{{ item }}"
+        state: absent
+        login_user: "{{MYSQL_USER}}"
+        login_password: "{{MYSQL_PASSWORD}}"
        with_items:
          - localhost
          - "{{ ansible_hostname }}"
     
      - name: Remove the test database
-       mysql_db: name=test state=absent
+       mysql_db:
+        name: test
+        state: absent
+        login_user: "{{MYSQL_USER}}"
+        login_password: "{{MYSQL_PASSWORD}}"
        notify:
          - Restart MySQL
          
-    when: mysqlAlreadySetup.stdout == "false"
+ #   when: mysqlAlreadySetup.stdout == "false"

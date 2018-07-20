@@ -5,10 +5,11 @@
 #===================================================================
 ---
   MYSQL_USER:        root
-  MYSQL_PASSWORD:    pass123
+  #MYSQL_PASSWORD:    pass123
+  # files here - https//sourceforge.net/projects/oscarmcmaster/files/Oscar%20Debian%2BUbuntu%20deb%20Package/
   OSCAR_VERSION:     15
-  OSCAR_SUB_VERSION: 80
-  OSCAR_DEB_VERSION: 745 
+  OSCAR_SUB_VERSION: 85
+  OSCAR_DEB_VERSION: 805 
   OSCAR_PACKAGE:     oscar_emr{{OSCAR_VERSION}}-{{OSCAR_SUB_VERSION}}~{{OSCAR_DEB_VERSION}}.deb
   OSCAR_PROPERTIES:  /usr/share/tomcat7/oscar.properties
   HOME:              "{{ lookup('env', 'HOME') }}"

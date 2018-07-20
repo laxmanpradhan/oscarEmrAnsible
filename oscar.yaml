@@ -7,7 +7,7 @@
 ---
 
 # To run: ansible-playbook oscarEmrAnsible/oscar.yaml --ask-become-pass -i "localhost," -c local
-- hosts: web
+- hosts: all
   vars:
     ansible_python_interpreter: /usr/bin/python3
   become: true
@@ -34,12 +34,15 @@
     stat: path={{DOWN}}/{{OSCAR_PACKAGE}}
     register: stOscarDebFile
 
+##cert not validated here??
   - name: Download Oscar
     get_url: 
       dest: "{{DOWN}}/{{OSCAR_PACKAGE}}" 
       url: "http://sourceforge.net/projects/oscarmcmaster/files/Oscar%20Debian%2BUbuntu%20deb%20Package/{{OSCAR_PACKAGE}}"
       validate_certs: no
     when: stOscarDebFile.stat.exists is defined and not stOscarDebFile.stat.exists
+    
+## consider hash check of download file
 
   - name: Prevent ReInstall
     stat: path={{OSCAR_PROPERTIES}}
@@ -66,6 +69,6 @@
 
     when: stOscarPropertiesFile.stat.exists is defined and not stOscarPropertiesFile.stat.exists and OSCAR_DEB_VERSION|int >= 694
 
-  - name: Install {{DOWN}}/{{OSCAR_PACKAGE}}
-    debug: msg="\n PRE-INSTALLATION COMPLETE. You must run 'sudo dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}' to install oscar!"
-    when: OSCAR_DEB_VERSION|int < 694
+#  - name: Install {{DOWN}}/{{OSCAR_PACKAGE}}
+#    debug: msg="\n PRE-INSTALLATION COMPLETE. You must run 'sudo dpkg -i {{DOWN}}/{{OSCAR_PACKAGE}}' to install oscar!"
+#    when: OSCAR_DEB_VERSION|int < 694
